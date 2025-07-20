@@ -62,7 +62,7 @@ class _HostsScreenState extends State<HostsScreen> {
     try {
       await HostsService.saveHostsFile(_hostEntries);
       if (mounted) {
-        _showInfoDialog('成功', 'hosts文件已保存');
+        _showSuccessMessage('hosts文件已保存');
       }
     } catch (e) {
       if (mounted) {
@@ -120,7 +120,7 @@ class _HostsScreenState extends State<HostsScreen> {
         });
         await _saveHosts();
         if (mounted) {
-          _showInfoDialog('成功', '已更新 ${addedEntries.length} 个hosts条目');
+          _showSuccessMessage('已更新 ${addedEntries.length} 个hosts条目');
         }
       }
     } catch (e) {
@@ -173,6 +173,19 @@ class _HostsScreenState extends State<HostsScreen> {
     );
   }
 
+  void _showSuccessMessage(String message) {
+    displayInfoBar(
+      context,
+      builder: (context, close) => InfoBar(
+        title: const Text('成功'),
+        content: Text(message),
+        severity: InfoBarSeverity.success,
+        isLong: false,
+      ),
+      duration: const Duration(seconds: 3),
+    );
+  }
+
   void _toggleHostEntry(int index) {
     setState(() {
       _hostEntries[index].isEnabled = !_hostEntries[index].isEnabled;
@@ -180,11 +193,32 @@ class _HostsScreenState extends State<HostsScreen> {
     _saveHosts();
   }
 
-  void _deleteHostEntry(int index) {
-    setState(() {
-      _hostEntries.removeAt(index);
-    });
-    _saveHosts();
+  Future<void> _deleteHostEntry(int index) async {
+    final entry = _hostEntries[index];
+    final result = await showDialog<bool>(
+      context: context,
+      builder: (context) => ContentDialog(
+        title: const Text('确认删除'),
+        content: Text('确定要删除hosts条目 "${entry.hostnamesDisplay}" 吗？'),
+        actions: [
+          Button(
+            child: const Text('取消'),
+            onPressed: () => Navigator.pop(context, false),
+          ),
+          FilledButton(
+            child: const Text('删除'),
+            onPressed: () => Navigator.pop(context, true),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true) {
+      setState(() {
+        _hostEntries.removeAt(index);
+      });
+      await _saveHosts();
+    }
   }
 
   Future<void> _editHostEntry(int index) async {
@@ -331,7 +365,7 @@ class _HostsScreenState extends State<HostsScreen> {
                   entry.hostnamesDisplay,
                   style: TextStyle(
                     decoration: entry.isEnabled ? null : TextDecoration.lineThrough,
-                    color: entry.isEnabled ? null : Colors.grey,
+                    color: entry.isEnabled ? null : FluentTheme.of(context).resources.textFillColorDisabled,
                     fontSize: 14,
                   ),
                   maxLines: null, // 允许多行显示
@@ -343,7 +377,7 @@ class _HostsScreenState extends State<HostsScreen> {
                 child: Text(
                   entry.ip,
                   style: TextStyle(
-                    color: entry.isEnabled ? null : Colors.grey,
+                    color: entry.isEnabled ? null : FluentTheme.of(context).resources.textFillColorDisabled,
                     fontSize: 12,
                   ),
                 ),

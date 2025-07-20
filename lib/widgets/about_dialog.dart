@@ -1,12 +1,15 @@
 import 'package:fluent_ui/fluent_ui.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../constants/app_constants.dart';
 
 class AboutDialog extends StatelessWidget {
   const AboutDialog({super.key});
 
-  String _getBuildTime() {
-    // 获取编译时间
-    final now = DateTime.now();
-    return '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')} ${now.hour.toString().padLeft(2, '0')}:${now.minute.toString().padLeft(2, '0')}:${now.second.toString().padLeft(2, '0')}';
+  Future<void> _launchUrl(String url) async {
+    final Uri uri = Uri.parse(url);
+    if (!await launchUrl(uri)) {
+      throw Exception('Could not launch $url');
+    }
   }
 
   @override
@@ -25,12 +28,12 @@ class AboutDialog extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text('作者: skyjee 版本: 1.0.1'),
+          const Text('作者: skyjee'),
           const SizedBox(height: 8),
-          Text('编译时间: ${_getBuildTime()}'),
+          Text('版本号: ${AppConstants.appVersion}'),
           const SizedBox(height: 16),
           const Text(
-            '这是一个Windows风格的hosts文件管理工具，可以帮助您轻松管理系统的hosts文件。',
+            '这是一个WinUI风格的hosts文件管理工具，可以帮助您轻松管理系统的hosts文件。',
             style: TextStyle(fontSize: 14),
           ),
           const SizedBox(height: 12),
@@ -43,7 +46,28 @@ class AboutDialog extends StatelessWidget {
           const Text('• 启用/禁用hosts条目'),
           const Text('• 添加新的hosts条目'),
           const Text('• 从GitHub获取最新hosts'),
-          const Text('• Windows原生界面风格'),
+          const Text('• WinUI风格的界面'),
+          const SizedBox(height: 16),
+          const Text(
+            '开源项目：',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          GestureDetector(
+            onTap: () => _launchUrl(AppConstants.githubUrl),
+            child: Text(
+              'https://github.com/tianjiangqiji/Hosts-Manager-For-Github',
+              style: TextStyle(
+                color: Colors.blue,
+                decoration: TextDecoration.underline,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            '如果这个项目对您有帮助，请给我们一个 ⭐ Star！',
+            style: TextStyle(fontSize: 13),
+          ),
         ],
       ),
       actions: [
