@@ -67,8 +67,7 @@ FlutterWindow::MessageHandler(HWND hwnd, UINT const message,
       break;
     case WM_GETMINMAXINFO: {
       MINMAXINFO* minMaxInfo = reinterpret_cast<MINMAXINFO*>(lparam);
-      // Set minimum window size: width 1000px, height 700px
-      minMaxInfo->ptMinTrackSize.x = 1000;
+      minMaxInfo->ptMinTrackSize.x = 600;
       minMaxInfo->ptMinTrackSize.y = 700;
       return 0;
     }

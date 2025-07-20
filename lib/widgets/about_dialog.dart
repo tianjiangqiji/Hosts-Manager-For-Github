@@ -25,7 +25,7 @@ class AboutDialog extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          const Text('作者: skyjee'),
+          const Text('作者: skyjee 版本: 1.0.1'),
           const SizedBox(height: 8),
           Text('编译时间: ${_getBuildTime()}'),
           const SizedBox(height: 16),
